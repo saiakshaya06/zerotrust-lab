@@ -1,20 +1,12 @@
 import { useState } from "react";
 import { loginUser } from "../services/api";
 
-function Login({ goToRegister }) {
+function Login({ goToRegister, onLoginSuccess }) {
 
-    const [username, setUsername] =
-        useState("");
-
-    const [password, setPassword] =
-        useState("");
-
-    const [message, setMessage] =
-        useState("");
-
-    const [loading, setLoading] =
-        useState(false);
-
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
+    const [message, setMessage] = useState("");
+    const [loading, setLoading] = useState(false);
 
     async function handleLogin(e) {
 
@@ -32,7 +24,6 @@ function Login({ goToRegister }) {
         setLoading(true);
         setMessage("Logging in...");
 
-
         try {
 
             const data =
@@ -41,18 +32,16 @@ function Login({ goToRegister }) {
                     password
                 );
 
-
             console.log(
-                "Login response:",
+                "LOGIN RESPONSE:",
                 data
             );
 
-
-            // ==========================================
+            // ================================
             // LOGIN SUCCESS
-            // ==========================================
+            // ================================
 
-            if (data && data.token) {
+            if (data?.token) {
 
                 localStorage.setItem(
                     "token",
@@ -61,47 +50,47 @@ function Login({ goToRegister }) {
 
                 localStorage.setItem(
                     "username",
-                    username
+                    data.username
                 );
 
-
-                // Remove old OTP data
-                localStorage.removeItem(
-                    "otpUsername"
+                localStorage.setItem(
+                    "role",
+                    data.role
                 );
 
+                setMessage(
+                    "Login successful!"
+                );
 
-                // Open dashboard
-                window.location.reload();
+                onLoginSuccess(data);
 
                 return;
             }
 
-
-            // ==========================================
+            // ================================
             // LOGIN FAILED
-            // ==========================================
+            // ================================
 
             setMessage(
                 data?.message ||
-                "Invalid username or password."
+                "Login failed."
             );
 
         } catch (error) {
 
             console.error(
-                "Login component error:",
+                "LOGIN COMPONENT ERROR:",
                 error
             );
 
             setMessage(
-                "Login failed. Please try again."
+                error.message ||
+                "Login failed."
             );
 
         } finally {
 
             setLoading(false);
-
         }
     }
 
@@ -120,7 +109,6 @@ function Login({ goToRegister }) {
                     Login
                 </h2>
 
-
                 <form
                     onSubmit={handleLogin}
                 >
@@ -136,7 +124,6 @@ function Login({ goToRegister }) {
                         }
                     />
 
-
                     <input
                         type="password"
                         placeholder="Password"
@@ -147,7 +134,6 @@ function Login({ goToRegister }) {
                             )
                         }
                     />
-
 
                     <button
                         type="submit"
@@ -163,18 +149,18 @@ function Login({ goToRegister }) {
 
                 </form>
 
-
                 <p>
                     {message}
                 </p>
-
 
                 <button
                     type="button"
                     className="link-button"
                     onClick={goToRegister}
                 >
-                    Create new account
+
+                    Create Account
+
                 </button>
 
             </div>

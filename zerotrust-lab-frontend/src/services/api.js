@@ -1,16 +1,6 @@
 import axios from "axios";
 
-// =====================================================
-// BACKEND URL
-// =====================================================
-
-const API_URL =
-    "https://zerotrust-lab-backend.onrender.com";
-
-
-// =====================================================
-// AXIOS INSTANCE
-// =====================================================
+const API_URL = "https://zerotrust-lab-backend.onrender.com";
 
 const api = axios.create({
     baseURL: API_URL,
@@ -19,16 +9,11 @@ const api = axios.create({
     }
 });
 
-
-// =====================================================
+// ================================
 // REGISTER
-// =====================================================
+// ================================
+export async function registerUser(username, password, role) {
 
-export async function registerUser(
-    username,
-    password,
-    role
-) {
     try {
 
         const response = await api.post(
@@ -40,47 +25,28 @@ export async function registerUser(
             }
         );
 
-        console.log(
-            "REGISTER SUCCESS:",
-            response.data
-        );
-
         return response.data;
 
     } catch (error) {
 
-        console.error(
-            "REGISTER ERROR:",
-            error
-        );
-
-        console.error(
-            "STATUS:",
-            error.response?.status
-        );
-
-        console.error(
-            "BACKEND RESPONSE:",
-            error.response?.data
-        );
+        console.error("REGISTER ERROR:", error);
 
         return {
+            success: false,
             message:
                 error.response?.data?.message ||
-                "Registration failed."
+                error.message ||
+                "Registration failed"
         };
     }
 }
 
 
-// =====================================================
+// ================================
 // LOGIN
-// =====================================================
+// ================================
+export async function loginUser(username, password) {
 
-export async function loginUser(
-    username,
-    password
-) {
     try {
 
         const response = await api.post(
@@ -91,46 +57,27 @@ export async function loginUser(
             }
         );
 
-        console.log(
-            "LOGIN SUCCESS:",
-            response.data
-        );
-
         return response.data;
 
     } catch (error) {
 
-        console.error(
-            "LOGIN ERROR:",
-            error
-        );
-
-        console.error(
-            "STATUS:",
-            error.response?.status
-        );
-
-        console.error(
-            "BACKEND RESPONSE:",
-            error.response?.data
-        );
+        console.error("LOGIN ERROR:", error);
 
         return {
+            success: false,
             message:
                 error.response?.data?.message ||
-                "Login failed."
+                error.message ||
+                "Login failed"
         };
     }
 }
 
 
-// =====================================================
+// ================================
 // ACCESS RESOURCE
-// =====================================================
-
-export async function accessResource(
-    resource
-) {
+// ================================
+export async function accessResource(resource) {
 
     try {
 
@@ -151,10 +98,7 @@ export async function accessResource(
 
     } catch (error) {
 
-        console.error(
-            "ACCESS ERROR:",
-            error
-        );
+        console.error("ACCESS ERROR:", error);
 
         return {
             data: {
@@ -162,17 +106,17 @@ export async function accessResource(
                 resource: resource,
                 message:
                     error.response?.data?.message ||
-                    "Access denied."
+                    error.message ||
+                    "Access request failed"
             }
         };
     }
 }
 
 
-// =====================================================
-// GET ACCESS LOGS
-// =====================================================
-
+// ================================
+// ACCESS LOGS
+// ================================
 export async function getAccessLogs() {
 
     try {
@@ -194,17 +138,15 @@ export async function getAccessLogs() {
 
     } catch (error) {
 
-        console.error(
-            "ACCESS LOG ERROR:",
-            error
-        );
+        console.error("ACCESS LOG ERROR:", error);
 
         return {
             data: {
                 decision: "DENIED",
                 message:
                     error.response?.data?.message ||
-                    "Unable to load access logs."
+                    error.message ||
+                    "Unable to load access logs"
             }
         };
     }
