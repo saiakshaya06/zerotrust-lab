@@ -1,6 +1,5 @@
 import axios from "axios";
 
-
 // =====================================================
 // BACKEND URL
 // =====================================================
@@ -8,35 +7,29 @@ import axios from "axios";
 const API_BASE_URL =
     "https://zerotrust-lab-backend.onrender.com";
 
-
 // =====================================================
 // AXIOS INSTANCE
 // =====================================================
 
 const api = axios.create({
-
     baseURL: API_BASE_URL,
 
     headers: {
         "Content-Type": "application/json"
     }
-
 });
-
 
 // =====================================================
 // ADD JWT TOKEN AUTOMATICALLY
 // =====================================================
 
 api.interceptors.request.use(
-
     (config) => {
 
         const token =
             localStorage.getItem("token");
 
         if (token) {
-
             config.headers.Authorization =
                 `Bearer ${token}`;
         }
@@ -45,12 +38,9 @@ api.interceptors.request.use(
     },
 
     (error) => {
-
         return Promise.reject(error);
     }
-
 );
-
 
 // =====================================================
 // REGISTER
@@ -64,22 +54,23 @@ export function registerUser(data) {
     );
 }
 
-
 // =====================================================
 // LOGIN
 // =====================================================
 
-export function loginUser(data) {
+export function loginUser(username, password) {
 
     return api.post(
         "/auth/login",
-        data
+        {
+            username: username,
+            password: password
+        }
     );
 }
 
-
 // =====================================================
-// RESEARCH
+// ACCESS RESOURCE
 // =====================================================
 
 export function accessResource(resource) {
@@ -88,7 +79,6 @@ export function accessResource(resource) {
         resource
     );
 }
-
 
 // =====================================================
 // ACCESS LOGS
@@ -101,5 +91,8 @@ export function getAccessLogs() {
     );
 }
 
+// =====================================================
+// EXPORT
+// =====================================================
 
 export default api;
