@@ -17,17 +17,44 @@ function Register({ goToLogin }) {
 
     async function handleRegister(e) {
 
-        e.preventDefault();
+    e.preventDefault();
 
-        const data =
-            await registerUser(
-                username,
-                password,
-                role
-            );
-
-        setMessage(data.message);
+    if (!username || !password) {
+        setMessage(
+            "Username and password are required."
+        );
+        return;
     }
+
+    setMessage("Registering...");
+
+    const data = await registerUser(
+        username,
+        password,
+        role
+    );
+
+    if (
+        data.message ===
+        "User registered successfully"
+    ) {
+
+        setMessage(
+            "Registration successful! Redirecting to login..."
+        );
+
+        setTimeout(() => {
+            goToLogin();
+        }, 1000);
+
+        return;
+    }
+
+    setMessage(
+        data.message ||
+        "Registration failed."
+    );
+}
 
     return (
         <div className="auth-container">
@@ -46,11 +73,10 @@ function Register({ goToLogin }) {
                         type="text"
                         placeholder="Username"
                         value={username}
-                        onChange={
-                            e =>
-                                setUsername(
-                                    e.target.value
-                                )
+                        onChange={(e) =>
+                            setUsername(
+                                e.target.value
+                            )
                         }
                     />
 
@@ -58,21 +84,19 @@ function Register({ goToLogin }) {
                         type="password"
                         placeholder="Password"
                         value={password}
-                        onChange={
-                            e =>
-                                setPassword(
-                                    e.target.value
-                                )
+                        onChange={(e) =>
+                            setPassword(
+                                e.target.value
+                            )
                         }
                     />
 
                     <select
                         value={role}
-                        onChange={
-                            e =>
-                                setRole(
-                                    e.target.value
-                                )
+                        onChange={(e) =>
+                            setRole(
+                                e.target.value
+                            )
                         }
                     >
 
@@ -103,11 +127,11 @@ function Register({ goToLogin }) {
                 <p>{message}</p>
 
                 <button
+                    type="button"
                     className="link-button"
                     onClick={goToLogin}
                 >
-                    Already have an account?
-                    Login
+                    Already have an account? Login
                 </button>
 
             </div>

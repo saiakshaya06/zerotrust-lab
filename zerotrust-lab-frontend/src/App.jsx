@@ -10,7 +10,7 @@ import "./App.css";
 function App() {
 
     const token =
-        localStorage.getItem("token");
+        localStorage.setItem("token", token);
 
     const [
         page,
