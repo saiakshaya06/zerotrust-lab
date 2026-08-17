@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { registerUser } from "../services/api";
 
+
 function Register({ goToLogin }) {
 
     const [username, setUsername] =
@@ -23,6 +24,7 @@ function Register({ goToLogin }) {
 
         e.preventDefault();
 
+
         if (!username || !password) {
 
             setMessage(
@@ -32,6 +34,7 @@ function Register({ goToLogin }) {
             return;
         }
 
+
         setLoading(true);
 
         setMessage("Registering...");
@@ -39,22 +42,16 @@ function Register({ goToLogin }) {
 
         try {
 
-            const data = await registerUser(
-                username,
-                password,
-                role
-            );
-
-
-            console.log(
-                "Registration response:",
-                data
-            );
+            const data =
+                await registerUser(
+                    username,
+                    password,
+                    role
+                );
 
 
             if (
-                data &&
-                data.message ===
+                data?.message ===
                 "User registered successfully"
             ) {
 
@@ -62,11 +59,13 @@ function Register({ goToLogin }) {
                     "Registration successful! Redirecting to login..."
                 );
 
+
                 setTimeout(() => {
 
                     goToLogin();
 
                 }, 1000);
+
 
                 return;
             }
@@ -79,19 +78,15 @@ function Register({ goToLogin }) {
 
         } catch (error) {
 
-            console.error(
-                "Registration component error:",
-                error
-            );
+            console.error(error);
 
             setMessage(
-                "Registration failed. Please try again."
+                "Registration failed."
             );
 
         } finally {
 
             setLoading(false);
-
         }
     }
 
@@ -192,10 +187,8 @@ function Register({ goToLogin }) {
                     className="link-button"
                     onClick={goToLogin}
                 >
-
                     Already have an account?
                     Login
-
                 </button>
 
             </div>

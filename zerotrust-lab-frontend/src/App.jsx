@@ -2,7 +2,6 @@ import { useState } from "react";
 
 import Login from "./components/Login";
 import Register from "./components/Register";
-import OtpVerification from "./components/OtpVerification";
 import Dashboard from "./components/Dashboard";
 
 import "./App.css";
@@ -17,6 +16,10 @@ function App() {
         useState("login");
 
 
+    // ==========================================
+    // USER ALREADY LOGGED IN
+    // ==========================================
+
     if (token) {
 
         return <Dashboard />;
@@ -24,35 +27,34 @@ function App() {
     }
 
 
+    // ==========================================
+    // REGISTER PAGE
+    // ==========================================
+
     if (page === "register") {
 
         return (
+
             <Register
                 goToLogin={() =>
                     setPage("login")
                 }
             />
+
         );
 
     }
 
 
-    if (page === "otp") {
-
-        return <OtpVerification />;
-
-    }
-
+    // ==========================================
+    // LOGIN PAGE
+    // ==========================================
 
     return (
 
         <Login
             goToRegister={() =>
                 setPage("register")
-            }
-
-            goToOtp={() =>
-                setPage("otp")
             }
         />
 

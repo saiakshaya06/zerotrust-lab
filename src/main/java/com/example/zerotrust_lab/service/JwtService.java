@@ -13,16 +13,8 @@ import java.util.Date;
 @Service
 public class JwtService {
 
-    // ==========================================
-    // JWT SECRET
-    // ==========================================
-
     @Value("${JWT_SECRET:ZeroTrustLabSecretKeyForJWTAuthentication123456789}")
     private String secret;
-
-    // ==========================================
-    // CREATE SECRET KEY
-    // ==========================================
 
     private SecretKey getKey() {
 
@@ -31,57 +23,34 @@ public class JwtService {
         );
     }
 
-    // ==========================================
-    // GENERATE JWT TOKEN
-    // ==========================================
-
     public String generateToken(
             String username,
             String role) {
 
         return Jwts.builder()
-
                 .subject(username)
-
                 .claim("role", role)
-
                 .issuedAt(new Date())
-
                 .expiration(
                         new Date(
                                 System.currentTimeMillis()
                                         + 60 * 60 * 1000
                         )
                 )
-
                 .signWith(getKey())
-
                 .compact();
     }
-
-    // ==========================================
-    // EXTRACT USERNAME
-    // ==========================================
 
     public String extractUsername(
             String token) {
 
         return Jwts.parser()
-
                 .verifyWith(getKey())
-
                 .build()
-
                 .parseSignedClaims(token)
-
                 .getPayload()
-
                 .getSubject();
     }
-
-    // ==========================================
-    // VALIDATE JWT
-    // ==========================================
 
     public boolean isValid(
             String token) {
@@ -89,11 +58,8 @@ public class JwtService {
         try {
 
             Jwts.parser()
-
                     .verifyWith(getKey())
-
                     .build()
-
                     .parseSignedClaims(token);
 
             return true;

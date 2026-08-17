@@ -29,15 +29,14 @@ export async function registerUser(
     password,
     role
 ) {
-
     try {
 
         const response = await api.post(
             "/auth/register",
             {
-                username: username,
-                password: password,
-                role: role
+                username,
+                password,
+                role
             }
         );
 
@@ -68,7 +67,7 @@ export async function registerUser(
         return {
             message:
                 error.response?.data?.message ||
-                "Registration failed. Please check the backend."
+                "Registration failed."
         };
     }
 }
@@ -82,14 +81,13 @@ export async function loginUser(
     username,
     password
 ) {
-
     try {
 
         const response = await api.post(
             "/auth/login",
             {
-                username: username,
-                password: password
+                username,
+                password
             }
         );
 
@@ -120,66 +118,14 @@ export async function loginUser(
         return {
             message:
                 error.response?.data?.message ||
-                "Login failed. Please check your username and password."
+                "Login failed."
         };
     }
 }
 
 
 // =====================================================
-// VERIFY OTP
-// =====================================================
-
-export async function verifyOtp(
-    username,
-    otp
-) {
-
-    try {
-
-        const response = await api.post(
-            "/auth/verify-otp",
-            {
-                username: username,
-                otp: otp
-            }
-        );
-
-        console.log(
-            "OTP SUCCESS:",
-            response.data
-        );
-
-        return response.data;
-
-    } catch (error) {
-
-        console.error(
-            "OTP ERROR:",
-            error
-        );
-
-        console.error(
-            "STATUS:",
-            error.response?.status
-        );
-
-        console.error(
-            "BACKEND RESPONSE:",
-            error.response?.data
-        );
-
-        return {
-            message:
-                error.response?.data?.message ||
-                "OTP verification failed."
-        };
-    }
-}
-
-
-// =====================================================
-// ACCESS LAB RESOURCE
+// ACCESS RESOURCE
 // =====================================================
 
 export async function accessResource(
@@ -201,11 +147,6 @@ export async function accessResource(
             }
         );
 
-        console.log(
-            "ACCESS RESPONSE:",
-            response.data
-        );
-
         return response;
 
     } catch (error) {
@@ -221,7 +162,7 @@ export async function accessResource(
                 resource: resource,
                 message:
                     error.response?.data?.message ||
-                    "Access request failed."
+                    "Access denied."
             }
         };
     }
@@ -247,11 +188,6 @@ export async function getAccessLogs() {
                         `Bearer ${token}`
                 }
             }
-        );
-
-        console.log(
-            "ACCESS LOGS:",
-            response.data
         );
 
         return response;

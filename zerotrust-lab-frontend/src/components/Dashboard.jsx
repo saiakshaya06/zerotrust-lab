@@ -11,6 +11,7 @@ function Dashboard() {
     const username =
         localStorage.getItem("username");
 
+
     const [result, setResult] =
         useState(null);
 
@@ -18,9 +19,9 @@ function Dashboard() {
         useState([]);
 
 
-    /* =====================================================
-       CHECK RESOURCE
-    ===================================================== */
+    // ==========================================
+    // CHECK RESOURCE
+    // ==========================================
 
     async function checkResource(resource) {
 
@@ -33,39 +34,35 @@ function Dashboard() {
     }
 
 
-    /* =====================================================
-       LOAD ACCESS LOGS
-    ===================================================== */
+    // ==========================================
+    // LOAD ACCESS LOGS
+    // ==========================================
 
     async function loadLogs() {
-
-        setLogs([]);
 
         const response =
             await getAccessLogs();
 
-        if (response.data.accessLogs) {
+        if (
+            response.data &&
+            response.data.accessLogs
+        ) {
 
             setLogs(
                 response.data.accessLogs
             );
 
-            setResult(
-                response.data
-            );
-
-        } else {
-
-            setResult(
-                response.data
-            );
         }
+
+        setResult(
+            response.data
+        );
     }
 
 
-    /* =====================================================
-       LOGOUT
-    ===================================================== */
+    // ==========================================
+    // LOGOUT
+    // ==========================================
 
     function logout() {
 
@@ -89,6 +86,10 @@ function Dashboard() {
 
         <div className="dashboard">
 
+            {/* ================================= */}
+            {/* HEADER */}
+            {/* ================================= */}
+
             <header>
 
                 <div>
@@ -108,7 +109,7 @@ function Dashboard() {
                 <div>
 
                     <span>
-                        User: {username}
+                        Welcome, {username}
                     </span>
 
                     <button
@@ -124,10 +125,24 @@ function Dashboard() {
 
             <main>
 
+                {/* ================================= */}
+                {/* ACCESS INFORMATION */}
+                {/* ================================= */}
+
                 <h2>
-                    Laboratory Resources
+                    Your Laboratory Access
                 </h2>
 
+                <p>
+                    Select a resource to check
+                    whether you are allowed to
+                    access it.
+                </p>
+
+
+                {/* ================================= */}
+                {/* RESOURCES */}
+                {/* ================================= */}
 
                 <div className="resource-grid">
 
@@ -199,7 +214,9 @@ function Dashboard() {
                 </div>
 
 
+                {/* ================================= */}
                 {/* ACCESS DECISION */}
+                {/* ================================= */}
 
                 {result && (
 
@@ -230,7 +247,8 @@ function Dashboard() {
                             <strong>
                                 User:
                             </strong>{" "}
-                            {result.user}
+                            {result.user ||
+                                username}
                         </p>
 
 
@@ -242,10 +260,13 @@ function Dashboard() {
                         </p>
 
                     </div>
+
                 )}
 
 
+                {/* ================================= */}
                 {/* ACCESS LOGS */}
+                {/* ================================= */}
 
                 <div className="logs-section">
 
@@ -356,6 +377,7 @@ function Dashboard() {
             </main>
 
         </div>
+
     );
 }
 
