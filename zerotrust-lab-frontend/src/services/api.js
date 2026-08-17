@@ -1,153 +1,105 @@
 import axios from "axios";
 
-const API_URL = "https://zerotrust-lab-backend.onrender.com";
+
+// =====================================================
+// BACKEND URL
+// =====================================================
+
+const API_BASE_URL =
+    "https://zerotrust-lab-backend.onrender.com";
+
+
+// =====================================================
+// AXIOS INSTANCE
+// =====================================================
 
 const api = axios.create({
-    baseURL: API_URL,
+
+    baseURL: API_BASE_URL,
+
     headers: {
         "Content-Type": "application/json"
     }
+
 });
 
-// ================================
+
+// =====================================================
+// ADD JWT TOKEN AUTOMATICALLY
+// =====================================================
+
+api.interceptors.request.use(
+
+    (config) => {
+
+        const token =
+            localStorage.getItem("token");
+
+        if (token) {
+
+            config.headers.Authorization =
+                `Bearer ${token}`;
+        }
+
+        return config;
+    },
+
+    (error) => {
+
+        return Promise.reject(error);
+    }
+
+);
+
+
+// =====================================================
 // REGISTER
-// ================================
-export async function registerUser(username, password, role) {
+// =====================================================
 
-    try {
+export function registerUser(data) {
 
-        const response = await api.post(
-            "/auth/register",
-            {
-                username,
-                password,
-                role
-            }
-        );
-
-        return response.data;
-
-    } catch (error) {
-
-        console.error("REGISTER ERROR:", error);
-
-        return {
-            success: false,
-            message:
-                error.response?.data?.message ||
-                error.message ||
-                "Registration failed"
-        };
-    }
+    return api.post(
+        "/auth/register",
+        data
+    );
 }
 
 
-// ================================
+// =====================================================
 // LOGIN
-// ================================
-export async function loginUser(username, password) {
+// =====================================================
 
-    try {
+export function loginUser(data) {
 
-        const response = await api.post(
-            "/auth/login",
-            {
-                username,
-                password
-            }
-        );
-
-        return response.data;
-
-    } catch (error) {
-
-        console.error("LOGIN ERROR:", error);
-
-        return {
-            success: false,
-            message:
-                error.response?.data?.message ||
-                error.message ||
-                "Login failed"
-        };
-    }
+    return api.post(
+        "/auth/login",
+        data
+    );
 }
 
 
-// ================================
-// ACCESS RESOURCE
-// ================================
-export async function accessResource(resource) {
+// =====================================================
+// RESEARCH
+// =====================================================
 
-    try {
+export function accessResource(resource) {
 
-        const token =
-            localStorage.getItem("token");
-
-        const response = await api.get(
-            resource,
-            {
-                headers: {
-                    Authorization:
-                        `Bearer ${token}`
-                }
-            }
-        );
-
-        return response;
-
-    } catch (error) {
-
-        console.error("ACCESS ERROR:", error);
-
-        return {
-            data: {
-                decision: "DENIED",
-                resource: resource,
-                message:
-                    error.response?.data?.message ||
-                    error.message ||
-                    "Access request failed"
-            }
-        };
-    }
+    return api.get(
+        resource
+    );
 }
 
 
-// ================================
+// =====================================================
 // ACCESS LOGS
-// ================================
-export async function getAccessLogs() {
+// =====================================================
 
-    try {
+export function getAccessLogs() {
 
-        const token =
-            localStorage.getItem("token");
-
-        const response = await api.get(
-            "/lab/admin/access-logs",
-            {
-                headers: {
-                    Authorization:
-                        `Bearer ${token}`
-                }
-            }
-        );
-
-        return response;
-
-    } catch (error) {
-
-        console.error("ACCESS LOG ERROR:", error);
-
-        return {
-            data: {
-                decision: "DENIED",
-                message:
-                    error.response?.data?.message ||
-                    error.message ||
-                    "Unable to load access logs"
-            }
-        };
-    }
+    return api.get(
+        "/lab/admin/access-logs"
+    );
 }
+
+
+export default api;

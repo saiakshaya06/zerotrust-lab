@@ -20,10 +20,9 @@ public class CorsConfig {
                 registry
                         .addMapping("/**")
 
-                        .allowedOrigins(
-                                "http://localhost:5173",
-                                "http://localhost:3000",
-                                "https://zerotrust-lab-nine.vercel.app"
+                        // Allow Vercel and local frontend
+                        .allowedOriginPatterns(
+                                "*"
                         )
 
                         .allowedMethods(
@@ -35,8 +34,6 @@ public class CorsConfig {
                         )
 
                         .allowedHeaders("*")
-
-                        .exposedHeaders("*")
 
                         .allowCredentials(false);
             }
