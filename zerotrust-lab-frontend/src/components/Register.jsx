@@ -3,21 +3,39 @@ import { registerUser } from "../services/api";
 
 function Register({ goToLogin }) {
 
-    const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
-    const [role, setRole] = useState("RESEARCHER");
-    const [message, setMessage] = useState("");
+    const [username, setUsername] =
+        useState("");
+
+    const [password, setPassword] =
+        useState("");
+
+    const [role, setRole] =
+        useState("RESEARCHER");
+
+    const [message, setMessage] =
+        useState("");
+
+    const [loading, setLoading] =
+        useState(false);
+
 
     async function handleRegister(e) {
 
         e.preventDefault();
 
         if (!username || !password) {
-            setMessage("Username and password are required.");
+
+            setMessage(
+                "Username and password are required."
+            );
+
             return;
         }
 
+        setLoading(true);
+
         setMessage("Registering...");
+
 
         try {
 
@@ -27,11 +45,17 @@ function Register({ goToLogin }) {
                 role
             );
 
-            console.log("REGISTER RESPONSE:", data);
+
+            console.log(
+                "Registration response:",
+                data
+            );
+
 
             if (
                 data &&
-                data.message === "User registered successfully"
+                data.message ===
+                "User registered successfully"
             ) {
 
                 setMessage(
@@ -39,59 +63,88 @@ function Register({ goToLogin }) {
                 );
 
                 setTimeout(() => {
+
                     goToLogin();
+
                 }, 1000);
 
                 return;
             }
 
+
             setMessage(
-                data?.message || "Registration failed."
+                data?.message ||
+                "Registration failed."
             );
 
         } catch (error) {
 
-            console.error("REGISTER ERROR:", error);
+            console.error(
+                "Registration component error:",
+                error
+            );
 
             setMessage(
-                "Registration failed. Please check the backend."
+                "Registration failed. Please try again."
             );
+
+        } finally {
+
+            setLoading(false);
+
         }
     }
 
+
     return (
+
         <div className="auth-container">
 
             <div className="auth-card">
 
-                <h1>ZeroTrustLab</h1>
+                <h1>
+                    ZeroTrustLab
+                </h1>
 
-                <h2>Create Account</h2>
+                <h2>
+                    Create Account
+                </h2>
 
-                <form onSubmit={handleRegister}>
+
+                <form
+                    onSubmit={handleRegister}
+                >
 
                     <input
                         type="text"
                         placeholder="Username"
                         value={username}
                         onChange={(e) =>
-                            setUsername(e.target.value)
+                            setUsername(
+                                e.target.value
+                            )
                         }
                     />
+
 
                     <input
                         type="password"
                         placeholder="Password"
                         value={password}
                         onChange={(e) =>
-                            setPassword(e.target.value)
+                            setPassword(
+                                e.target.value
+                            )
                         }
                     />
+
 
                     <select
                         value={role}
                         onChange={(e) =>
-                            setRole(e.target.value)
+                            setRole(
+                                e.target.value
+                            )
                         }
                     >
 
@@ -113,20 +166,36 @@ function Register({ goToLogin }) {
 
                     </select>
 
-                    <button type="submit">
-                        Register
+
+                    <button
+                        type="submit"
+                        disabled={loading}
+                    >
+
+                        {loading
+                            ? "Registering..."
+                            : "Register"
+                        }
+
                     </button>
 
                 </form>
 
-                <p>{message}</p>
+
+                <p>
+                    {message}
+                </p>
+
 
                 <button
                     type="button"
                     className="link-button"
                     onClick={goToLogin}
                 >
-                    Already have an account? Login
+
+                    Already have an account?
+                    Login
+
                 </button>
 
             </div>
@@ -134,5 +203,6 @@ function Register({ goToLogin }) {
         </div>
     );
 }
+
 
 export default Register;

@@ -11,9 +11,9 @@ const api = axios.create({
 });
 
 
-// ================================
+// ========================================
 // REGISTER
-// ================================
+// ========================================
 
 export async function registerUser(
     username,
@@ -25,14 +25,14 @@ export async function registerUser(
         const response = await api.post(
             "/auth/register",
             {
-                username,
-                password,
-                role
+                username: username,
+                password: password,
+                role: role
             }
         );
 
         console.log(
-            "Backend registration response:",
+            "REGISTER SUCCESS:",
             response.data
         );
 
@@ -41,12 +41,17 @@ export async function registerUser(
     } catch (error) {
 
         console.error(
-            "Registration error:",
+            "REGISTER ERROR:",
             error
         );
 
         console.error(
-            "Backend response:",
+            "STATUS:",
+            error.response?.status
+        );
+
+        console.error(
+            "RESPONSE:",
             error.response?.data
         );
 
@@ -59,9 +64,9 @@ export async function registerUser(
 }
 
 
-// ================================
+// ========================================
 // LOGIN
-// ================================
+// ========================================
 
 export async function loginUser(
     username,
@@ -72,9 +77,14 @@ export async function loginUser(
         const response = await api.post(
             "/auth/login",
             {
-                username,
-                password
+                username: username,
+                password: password
             }
+        );
+
+        console.log(
+            "LOGIN SUCCESS:",
+            response.data
         );
 
         return response.data;
@@ -82,8 +92,18 @@ export async function loginUser(
     } catch (error) {
 
         console.error(
-            "Login error:",
+            "LOGIN ERROR:",
             error
+        );
+
+        console.error(
+            "STATUS:",
+            error.response?.status
+        );
+
+        console.error(
+            "RESPONSE:",
+            error.response?.data
         );
 
         return {
@@ -95,9 +115,9 @@ export async function loginUser(
 }
 
 
-// ================================
+// ========================================
 // VERIFY OTP
-// ================================
+// ========================================
 
 export async function verifyOtp(
     username,
@@ -108,9 +128,14 @@ export async function verifyOtp(
         const response = await api.post(
             "/auth/verify-otp",
             {
-                username,
-                otp
+                username: username,
+                otp: otp
             }
+        );
+
+        console.log(
+            "OTP SUCCESS:",
+            response.data
         );
 
         return response.data;
@@ -118,8 +143,18 @@ export async function verifyOtp(
     } catch (error) {
 
         console.error(
-            "OTP verification error:",
+            "OTP ERROR:",
             error
+        );
+
+        console.error(
+            "STATUS:",
+            error.response?.status
+        );
+
+        console.error(
+            "RESPONSE:",
+            error.response?.data
         );
 
         return {
@@ -131,9 +166,9 @@ export async function verifyOtp(
 }
 
 
-// ================================
+// ========================================
 // ACCESS LAB RESOURCE
-// ================================
+// ========================================
 
 export async function accessResource(
     resource
@@ -159,7 +194,7 @@ export async function accessResource(
     } catch (error) {
 
         console.error(
-            "Access request error:",
+            "ACCESS ERROR:",
             error
         );
 
@@ -176,9 +211,9 @@ export async function accessResource(
 }
 
 
-// ================================
+// ========================================
 // GET ACCESS LOGS
-// ================================
+// ========================================
 
 export async function getAccessLogs() {
 
@@ -202,7 +237,7 @@ export async function getAccessLogs() {
     } catch (error) {
 
         console.error(
-            "Access logs error:",
+            "ACCESS LOG ERROR:",
             error
         );
 
