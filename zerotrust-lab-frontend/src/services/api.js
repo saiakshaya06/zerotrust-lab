@@ -31,6 +31,11 @@ export async function registerUser(
             }
         );
 
+        console.log(
+            "Backend registration response:",
+            response.data
+        );
+
         return response.data;
 
     } catch (error) {
@@ -38,6 +43,11 @@ export async function registerUser(
         console.error(
             "Registration error:",
             error
+        );
+
+        console.error(
+            "Backend response:",
+            error.response?.data
         );
 
         return {
@@ -156,9 +166,7 @@ export async function accessResource(
         return {
             data: {
                 decision: "DENIED",
-
                 resource: resource,
-
                 message:
                     error.response?.data?.message ||
                     "Access request failed."
@@ -201,7 +209,6 @@ export async function getAccessLogs() {
         return {
             data: {
                 decision: "DENIED",
-
                 message:
                     error.response?.data?.message ||
                     "Unable to load access logs."

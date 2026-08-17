@@ -3,58 +3,61 @@ import { registerUser } from "../services/api";
 
 function Register({ goToLogin }) {
 
-    const [username, setUsername] =
-        useState("");
-
-    const [password, setPassword] =
-        useState("");
-
-    const [role, setRole] =
-        useState("RESEARCHER");
-
-    const [message, setMessage] =
-        useState("");
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
+    const [role, setRole] = useState("RESEARCHER");
+    const [message, setMessage] = useState("");
 
     async function handleRegister(e) {
 
-    e.preventDefault();
+        e.preventDefault();
 
-    if (!username || !password) {
-        setMessage(
-            "Username and password are required."
-        );
-        return;
+        if (!username || !password) {
+            setMessage("Username and password are required.");
+            return;
+        }
+
+        setMessage("Registering...");
+
+        try {
+
+            const data = await registerUser(
+                username,
+                password,
+                role
+            );
+
+            console.log("REGISTER RESPONSE:", data);
+
+            if (
+                data &&
+                data.message === "User registered successfully"
+            ) {
+
+                setMessage(
+                    "Registration successful! Redirecting to login..."
+                );
+
+                setTimeout(() => {
+                    goToLogin();
+                }, 1000);
+
+                return;
+            }
+
+            setMessage(
+                data?.message || "Registration failed."
+            );
+
+        } catch (error) {
+
+            console.error("REGISTER ERROR:", error);
+
+            setMessage(
+                "Registration failed. Please check the backend."
+            );
+        }
     }
-
-    setMessage("Registering...");
-
-    const data = await registerUser(
-        username,
-        password,
-        role
-    );
-
-    if (
-        data.message ===
-        "User registered successfully"
-    ) {
-
-        setMessage(
-            "Registration successful! Redirecting to login..."
-        );
-
-        setTimeout(() => {
-            goToLogin();
-        }, 1000);
-
-        return;
-    }
-
-    setMessage(
-        data.message ||
-        "Registration failed."
-    );
-}
 
     return (
         <div className="auth-container">
@@ -65,18 +68,14 @@ function Register({ goToLogin }) {
 
                 <h2>Create Account</h2>
 
-                <form
-                    onSubmit={handleRegister}
-                >
+                <form onSubmit={handleRegister}>
 
                     <input
                         type="text"
                         placeholder="Username"
                         value={username}
                         onChange={(e) =>
-                            setUsername(
-                                e.target.value
-                            )
+                            setUsername(e.target.value)
                         }
                     />
 
@@ -85,18 +84,14 @@ function Register({ goToLogin }) {
                         placeholder="Password"
                         value={password}
                         onChange={(e) =>
-                            setPassword(
-                                e.target.value
-                            )
+                            setPassword(e.target.value)
                         }
                     />
 
                     <select
                         value={role}
                         onChange={(e) =>
-                            setRole(
-                                e.target.value
-                            )
+                            setRole(e.target.value)
                         }
                     >
 

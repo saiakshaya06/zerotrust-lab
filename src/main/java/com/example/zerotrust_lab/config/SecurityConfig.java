@@ -1,3 +1,4 @@
+
 package com.example.zerotrust_lab.config;
 
 import org.springframework.context.annotation.Bean;
@@ -24,13 +25,11 @@ public class SecurityConfig {
             HttpSecurity http) throws Exception {
 
         http
-            .csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers(
-                    "/auth/**"
-                ).permitAll()
-                .anyRequest().permitAll()
-            );
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/auth/**").permitAll()
+                        .anyRequest().permitAll()
+                );
 
         return http.build();
     }
