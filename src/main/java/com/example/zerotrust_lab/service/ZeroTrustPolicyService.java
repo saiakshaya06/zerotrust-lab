@@ -21,20 +21,31 @@ public class ZeroTrustPolicyService {
         this.accessLogRepository = accessLogRepository;
     }
 
+    // ==========================================
+    // ZERO TRUST ACCESS CHECK
+    // ==========================================
+
     public String checkAccess(
             String username,
             String resource) {
 
+        // ------------------------------------------
+        // FIND USER
+        // ------------------------------------------
+
         User user = userRepository
                 .findByUsername(username)
                 .orElseThrow(() ->
-                        new RuntimeException("User not found"));
+                        new RuntimeException(
+                                "User not found"
+                        )
+                );
 
         String role = user.getRole().toUpperCase();
 
-        // ==========================================
-        // 1. ACCOUNT STATUS
-        // ==========================================
+        // ------------------------------------------
+        // 1. ACCOUNT CHECK
+        // ------------------------------------------
 
         if (!user.isActive()) {
 
@@ -48,9 +59,9 @@ public class ZeroTrustPolicyService {
             return "ACCESS DENIED: User account is inactive";
         }
 
-        // ==========================================
-        // 2. DEVICE TRUST
-        // ==========================================
+        // ------------------------------------------
+        // 2. DEVICE TRUST CHECK
+        // ------------------------------------------
 
         if (!user.isDeviceTrusted()) {
 
@@ -66,11 +77,15 @@ public class ZeroTrustPolicyService {
 
         boolean allowed = false;
 
-        // ==========================================
-        // 3. ROLE BASED ZERO TRUST POLICY
-        // ==========================================
+        // ------------------------------------------
+        // 3. ROLE-BASED ACCESS
+        // ------------------------------------------
 
         switch (role) {
+
+            // ======================================
+            // RESEARCHER
+            // ======================================
 
             case "RESEARCHER":
 
@@ -84,6 +99,10 @@ public class ZeroTrustPolicyService {
 
                 break;
 
+            // ======================================
+            // LAB STAFF
+            // ======================================
+
             case "LAB_STAFF":
 
                 if (resource.equals("/lab/research")
@@ -96,6 +115,10 @@ public class ZeroTrustPolicyService {
 
                 break;
 
+            // ======================================
+            // INTERN
+            // ======================================
+
             case "INTERN":
 
                 if (resource.equals("/lab/intern")) {
@@ -105,11 +128,20 @@ public class ZeroTrustPolicyService {
 
                 break;
 
+            // ======================================
+            // LAB ADMIN
+            // ======================================
+
             case "LAB_ADMIN":
 
+                // Admin can access everything
                 allowed = true;
 
                 break;
+
+            // ======================================
+            // UNKNOWN ROLE
+            // ======================================
 
             default:
 
@@ -123,9 +155,9 @@ public class ZeroTrustPolicyService {
                 return "ACCESS DENIED: Unknown user role";
         }
 
-        // ==========================================
-        // 4. FINAL DECISION
-        // ==========================================
+        // ------------------------------------------
+        // 4. ALLOW
+        // ------------------------------------------
 
         if (allowed) {
 
@@ -145,6 +177,10 @@ public class ZeroTrustPolicyService {
             return message;
         }
 
+        // ------------------------------------------
+        // 5. DENY
+        // ------------------------------------------
+
         String message =
                 "ACCESS DENIED: "
                 + role
@@ -162,7 +198,7 @@ public class ZeroTrustPolicyService {
     }
 
     // ==========================================
-    // ACCESS LOG
+    // SAVE ACCESS LOG
     // ==========================================
 
     private void saveLog(

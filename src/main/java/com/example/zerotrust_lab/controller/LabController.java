@@ -1,6 +1,5 @@
 package com.example.zerotrust_lab.controller;
 
-import com.example.zerotrust_lab.service.JwtService;
 import com.example.zerotrust_lab.service.ZeroTrustPolicyService;
 
 import org.springframework.http.ResponseEntity;
@@ -10,18 +9,13 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/lab")
+@CrossOrigin(origins = "*")
 public class LabController {
 
     private final ZeroTrustPolicyService policyService;
 
-    private final JwtService jwtService;
-
-    public LabController(
-            ZeroTrustPolicyService policyService,
-            JwtService jwtService) {
-
+    public LabController(ZeroTrustPolicyService policyService) {
         this.policyService = policyService;
-        this.jwtService = jwtService;
     }
 
     // ==========================================
@@ -31,12 +25,13 @@ public class LabController {
     @GetMapping("/research")
     public ResponseEntity<?> research(
             @RequestHeader(
-                    value = "Authorization",
-                    required = false)
-            String authorization) {
+                    value = "X-Username",
+                    required = false
+            )
+            String username) {
 
         return check(
-                authorization,
+                username,
                 "/lab/research",
                 "Research Laboratory"
         );
@@ -49,12 +44,13 @@ public class LabController {
     @GetMapping("/experiments")
     public ResponseEntity<?> experiments(
             @RequestHeader(
-                    value = "Authorization",
-                    required = false)
-            String authorization) {
+                    value = "X-Username",
+                    required = false
+            )
+            String username) {
 
         return check(
-                authorization,
+                username,
                 "/lab/experiments",
                 "Experiment Resources"
         );
@@ -67,12 +63,13 @@ public class LabController {
     @GetMapping("/intern")
     public ResponseEntity<?> intern(
             @RequestHeader(
-                    value = "Authorization",
-                    required = false)
-            String authorization) {
+                    value = "X-Username",
+                    required = false
+            )
+            String username) {
 
         return check(
-                authorization,
+                username,
                 "/lab/intern",
                 "Intern Laboratory Resources"
         );
@@ -85,12 +82,13 @@ public class LabController {
     @GetMapping("/equipment")
     public ResponseEntity<?> equipment(
             @RequestHeader(
-                    value = "Authorization",
-                    required = false)
-            String authorization) {
+                    value = "X-Username",
+                    required = false
+            )
+            String username) {
 
         return check(
-                authorization,
+                username,
                 "/lab/equipment",
                 "Laboratory Equipment"
         );
@@ -103,51 +101,54 @@ public class LabController {
     @GetMapping("/operations")
     public ResponseEntity<?> operations(
             @RequestHeader(
-                    value = "Authorization",
-                    required = false)
-            String authorization) {
+                    value = "X-Username",
+                    required = false
+            )
+            String username) {
 
         return check(
-                authorization,
+                username,
                 "/lab/operations",
                 "Laboratory Operations"
         );
     }
 
     // ==========================================
-    // ADMIN
+    // ADMINISTRATION
     // ==========================================
 
     @GetMapping("/admin")
     public ResponseEntity<?> admin(
             @RequestHeader(
-                    value = "Authorization",
-                    required = false)
-            String authorization) {
+                    value = "X-Username",
+                    required = false
+            )
+            String username) {
 
         return check(
-                authorization,
+                username,
                 "/lab/admin",
                 "Laboratory Administration"
         );
     }
 
     // ==========================================
-    // ZERO TRUST CHECK
+    // ZERO TRUST POLICY CHECK
     // ==========================================
 
     private ResponseEntity<?> check(
-            String authorization,
+            String username,
             String resource,
             String resourceName) {
 
-        // STEP 1: Check JWT exists
+        // ------------------------------------------
+        // 1. USERNAME REQUIRED
+        // ------------------------------------------
 
-        if (authorization == null
-                || !authorization.startsWith("Bearer ")) {
+        if (username == null || username.trim().isEmpty()) {
 
             return ResponseEntity
-                    .status(401)
+                    .badRequest()
                     .body(
                             Map.of(
                                     "decision",
@@ -157,72 +158,75 @@ public class LabController {
                                     resourceName,
 
                                     "message",
-                                    "JWT token required"
+                                    "Username required"
                             )
                     );
         }
 
-        // STEP 2: Extract JWT
+        username = username.trim();
 
-        String token =
-                authorization.substring(7);
+        // ------------------------------------------
+        // 2. ZERO TRUST POLICY
+        // ------------------------------------------
 
-        // STEP 3: Validate JWT
+        String result;
 
-        if (!jwtService.isValid(token)) {
+        try {
 
-            return ResponseEntity
-                    .status(401)
-                    .body(
-                            Map.of(
-                                    "decision",
-                                    "DENIED",
-
-                                    "resource",
-                                    resourceName,
-
-                                    "message",
-                                    "Invalid or expired JWT"
-                            )
-                    );
-        }
-
-        // STEP 4: Identify user
-
-        String username =
-                jwtService.extractUsername(token);
-
-        // STEP 5: Apply Zero Trust policy
-
-        String result =
-                policyService.checkAccess(
-                        username,
-                        resource
-                );
-
-        // STEP 6: Access decision
-
-        if (result.startsWith(
-                "ACCESS ALLOWED")) {
-
-            return ResponseEntity.ok(
-                    Map.of(
-                            "decision",
-                            "ALLOWED",
-
-                            "user",
-                            username,
-
-                            "resource",
-                            resourceName,
-
-                            "message",
-                            result
-                    )
+            result = policyService.checkAccess(
+                    username,
+                    resource
             );
+
+        } catch (RuntimeException e) {
+
+            return ResponseEntity
+                    .status(404)
+                    .body(
+                            Map.of(
+                                    "decision",
+                                    "DENIED",
+
+                                    "user",
+                                    username,
+
+                                    "resource",
+                                    resourceName,
+
+                                    "message",
+                                    e.getMessage()
+                            )
+                    );
         }
 
-        // STEP 7: Deny access
+        // ------------------------------------------
+        // 3. ALLOWED
+        // ------------------------------------------
+
+        if (result.startsWith("ACCESS ALLOWED")) {
+
+            return ResponseEntity
+                    .ok()
+                    .body(
+                            Map.of(
+                                    "decision",
+                                    "ALLOWED",
+
+                                    "user",
+                                    username,
+
+                                    "resource",
+                                    resourceName,
+
+                                    "message",
+                                    result
+                            )
+                    );
+        }
+
+        // ------------------------------------------
+        // 4. DENIED
+        // ------------------------------------------
 
         return ResponseEntity
                 .status(403)

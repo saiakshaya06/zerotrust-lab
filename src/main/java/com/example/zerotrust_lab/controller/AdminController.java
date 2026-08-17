@@ -2,7 +2,6 @@ package com.example.zerotrust_lab.controller;
 
 import com.example.zerotrust_lab.model.AccessLog;
 import com.example.zerotrust_lab.repository.AccessLogRepository;
-import com.example.zerotrust_lab.service.JwtService;
 import com.example.zerotrust_lab.repository.UserRepository;
 import com.example.zerotrust_lab.model.User;
 
@@ -14,89 +13,90 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/lab/admin")
+@CrossOrigin(origins = "*")
 public class AdminController {
 
     private final AccessLogRepository accessLogRepository;
-    private final JwtService jwtService;
     private final UserRepository userRepository;
 
     public AdminController(
             AccessLogRepository accessLogRepository,
-            JwtService jwtService,
             UserRepository userRepository) {
 
         this.accessLogRepository = accessLogRepository;
-        this.jwtService = jwtService;
         this.userRepository = userRepository;
     }
+
+
+    // ==========================================
+    // ACCESS LOGS
+    // NO JWT
+    // ==========================================
 
     @GetMapping("/access-logs")
     public ResponseEntity<?> getAccessLogs(
 
             @RequestHeader(
-                    value = "Authorization",
-                    required = false)
-            String authorization) {
+                    value = "X-Username",
+                    required = false
+            )
+            String username) {
 
         // ==========================================
-        // STEP 1: JWT CHECK
+        // 1. USERNAME CHECK
         // ==========================================
 
-        if (authorization == null
-                || !authorization.startsWith("Bearer ")) {
+        if (username == null ||
+                username.trim().isEmpty()) {
 
             return ResponseEntity
-                    .status(401)
+                    .badRequest()
                     .body(
                             Map.of(
                                     "decision",
                                     "DENIED",
 
                                     "message",
-                                    "JWT token required"
+                                    "Username required"
                             )
                     );
         }
 
-        // ==========================================
-        // STEP 2: EXTRACT TOKEN
-        // ==========================================
+        username = username.trim();
 
-        String token =
-                authorization.substring(7);
 
         // ==========================================
-        // STEP 3: VALIDATE TOKEN
+        // 2. FIND USER
         // ==========================================
 
-        if (!jwtService.isValid(token)) {
-
-            return ResponseEntity
-                    .status(401)
-                    .body(
-                            Map.of(
-                                    "decision",
-                                    "DENIED",
-
-                                    "message",
-                                    "Invalid or expired JWT"
-                            )
-                    );
-        }
-
-        // ==========================================
-        // STEP 4: IDENTIFY USER
-        // ==========================================
-
-        String username =
-                jwtService.extractUsername(token);
-
-        User user =
-                userRepository
-                        .findByUsername(username)
-                        .orElse(null);
+        User user = userRepository
+                .findByUsername(username)
+                .orElse(null);
 
         if (user == null) {
+
+            return ResponseEntity
+                    .status(404)
+                    .body(
+                            Map.of(
+                                    "decision",
+                                    "DENIED",
+
+                                    "user",
+                                    username,
+
+                                    "message",
+                                    "User not found"
+                            )
+                    );
+        }
+
+
+        // ==========================================
+        // 3. ACCOUNT CHECK
+        // ==========================================
+
+        if (!user.isActive()) {
 
             return ResponseEntity
                     .status(403)
@@ -105,14 +105,18 @@ public class AdminController {
                                     "decision",
                                     "DENIED",
 
+                                    "user",
+                                    username,
+
                                     "message",
-                                    "User not found"
+                                    "User account is inactive"
                             )
                     );
         }
 
+
         // ==========================================
-        // STEP 5: CHECK LAB ADMIN ROLE
+        // 4. ROLE CHECK
         // ==========================================
 
         if (!user.getRole()
@@ -134,8 +138,32 @@ public class AdminController {
                     );
         }
 
+
         // ==========================================
-        // STEP 6: ALLOW ACCESS
+        // 5. DEVICE TRUST
+        // ==========================================
+
+        if (!user.isDeviceTrusted()) {
+
+            return ResponseEntity
+                    .status(403)
+                    .body(
+                            Map.of(
+                                    "decision",
+                                    "DENIED",
+
+                                    "user",
+                                    username,
+
+                                    "message",
+                                    "Device is not trusted"
+                            )
+                    );
+        }
+
+
+        // ==========================================
+        // 6. ALLOW
         // ==========================================
 
         List<AccessLog> logs =

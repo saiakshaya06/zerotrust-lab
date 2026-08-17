@@ -15,7 +15,6 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-
         return new BCryptPasswordEncoder();
     }
 
@@ -24,35 +23,25 @@ public class SecurityConfig {
             HttpSecurity http) throws Exception {
 
         http
-
-                // ==========================================
-                // CORS
-                // ==========================================
-
                 .cors(cors -> {})
-
-                // ==========================================
-                // CSRF
-                // ==========================================
-
                 .csrf(csrf -> csrf.disable())
-
-                // ==========================================
-                // AUTHORIZATION
-                // ==========================================
 
                 .authorizeHttpRequests(auth -> auth
 
-                        .requestMatchers(
-                                "/auth/**"
-                        ).permitAll()
+                        .requestMatchers("/auth/**")
+                        .permitAll()
 
                         .requestMatchers(
                                 org.springframework.http.HttpMethod.OPTIONS,
                                 "/**"
-                        ).permitAll()
+                        )
+                        .permitAll()
 
-                        .anyRequest().permitAll()
+                        .requestMatchers("/lab/**")
+                        .permitAll()
+
+                        .anyRequest()
+                        .permitAll()
                 );
 
         return http.build();
