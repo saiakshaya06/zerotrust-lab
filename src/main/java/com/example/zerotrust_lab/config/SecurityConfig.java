@@ -1,4 +1,3 @@
-
 package com.example.zerotrust_lab.config;
 
 import org.springframework.context.annotation.Bean;

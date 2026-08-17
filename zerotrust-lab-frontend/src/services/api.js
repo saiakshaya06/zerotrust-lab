@@ -1,7 +1,16 @@
 import axios from "axios";
 
+// =====================================================
+// BACKEND URL
+// =====================================================
+
 const API_URL =
     "https://zerotrust-lab-backend.onrender.com";
+
+
+// =====================================================
+// AXIOS INSTANCE
+// =====================================================
 
 const api = axios.create({
     baseURL: API_URL,
@@ -11,15 +20,16 @@ const api = axios.create({
 });
 
 
-// ========================================
+// =====================================================
 // REGISTER
-// ========================================
+// =====================================================
 
 export async function registerUser(
     username,
     password,
     role
 ) {
+
     try {
 
         const response = await api.post(
@@ -51,7 +61,7 @@ export async function registerUser(
         );
 
         console.error(
-            "RESPONSE:",
+            "BACKEND RESPONSE:",
             error.response?.data
         );
 
@@ -64,14 +74,15 @@ export async function registerUser(
 }
 
 
-// ========================================
+// =====================================================
 // LOGIN
-// ========================================
+// =====================================================
 
 export async function loginUser(
     username,
     password
 ) {
+
     try {
 
         const response = await api.post(
@@ -102,7 +113,7 @@ export async function loginUser(
         );
 
         console.error(
-            "RESPONSE:",
+            "BACKEND RESPONSE:",
             error.response?.data
         );
 
@@ -115,14 +126,15 @@ export async function loginUser(
 }
 
 
-// ========================================
+// =====================================================
 // VERIFY OTP
-// ========================================
+// =====================================================
 
 export async function verifyOtp(
     username,
     otp
 ) {
+
     try {
 
         const response = await api.post(
@@ -153,7 +165,7 @@ export async function verifyOtp(
         );
 
         console.error(
-            "RESPONSE:",
+            "BACKEND RESPONSE:",
             error.response?.data
         );
 
@@ -166,9 +178,9 @@ export async function verifyOtp(
 }
 
 
-// ========================================
+// =====================================================
 // ACCESS LAB RESOURCE
-// ========================================
+// =====================================================
 
 export async function accessResource(
     resource
@@ -187,6 +199,11 @@ export async function accessResource(
                         `Bearer ${token}`
                 }
             }
+        );
+
+        console.log(
+            "ACCESS RESPONSE:",
+            response.data
         );
 
         return response;
@@ -211,9 +228,9 @@ export async function accessResource(
 }
 
 
-// ========================================
+// =====================================================
 // GET ACCESS LOGS
-// ========================================
+// =====================================================
 
 export async function getAccessLogs() {
 
@@ -230,6 +247,11 @@ export async function getAccessLogs() {
                         `Bearer ${token}`
                 }
             }
+        );
+
+        console.log(
+            "ACCESS LOGS:",
+            response.data
         );
 
         return response;
