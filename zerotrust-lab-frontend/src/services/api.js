@@ -1,125 +1,211 @@
+import axios from "axios";
+
 const API_URL =
-    import.meta.env.VITE_API_URL ||
-    "http://localhost:8080";
+    "https://zerotrust-lab-backend.onrender.com";
+
+const api = axios.create({
+    baseURL: API_URL,
+    headers: {
+        "Content-Type": "application/json"
+    }
+});
+
+
+// ================================
+// REGISTER
+// ================================
 
 export async function registerUser(
     username,
     password,
     role
 ) {
+    try {
 
-    const response = await fetch(
-        `${API_URL}/auth/register`,
-        {
-            method: "POST",
-
-            headers: {
-                "Content-Type": "application/json"
-            },
-
-            body: JSON.stringify({
+        const response = await api.post(
+            "/auth/register",
+            {
                 username,
                 password,
                 role
-            })
-        }
-    );
+            }
+        );
 
-    return response.json();
+        return response.data;
+
+    } catch (error) {
+
+        console.error(
+            "Registration error:",
+            error
+        );
+
+        return {
+            message:
+                error.response?.data?.message ||
+                "Registration failed. Please check the backend."
+        };
+    }
 }
+
+
+// ================================
+// LOGIN
+// ================================
 
 export async function loginUser(
     username,
     password
 ) {
+    try {
 
-    const response = await fetch(
-        `${API_URL}/auth/login`,
-        {
-            method: "POST",
-
-            headers: {
-                "Content-Type": "application/json"
-            },
-
-            body: JSON.stringify({
+        const response = await api.post(
+            "/auth/login",
+            {
                 username,
                 password
-            })
-        }
-    );
+            }
+        );
 
-    return response.json();
+        return response.data;
+
+    } catch (error) {
+
+        console.error(
+            "Login error:",
+            error
+        );
+
+        return {
+            message:
+                error.response?.data?.message ||
+                "Login failed. Please check your username and password."
+        };
+    }
 }
+
+
+// ================================
+// VERIFY OTP
+// ================================
 
 export async function verifyOtp(
     username,
     otp
 ) {
+    try {
 
-    const response = await fetch(
-        `${API_URL}/auth/verify-otp`,
-        {
-            method: "POST",
-
-            headers: {
-                "Content-Type": "application/json"
-            },
-
-            body: JSON.stringify({
+        const response = await api.post(
+            "/auth/verify-otp",
+            {
                 username,
                 otp
-            })
-        }
-    );
+            }
+        );
 
-    return response.json();
+        return response.data;
+
+    } catch (error) {
+
+        console.error(
+            "OTP verification error:",
+            error
+        );
+
+        return {
+            message:
+                error.response?.data?.message ||
+                "OTP verification failed."
+        };
+    }
 }
+
+
+// ================================
+// ACCESS LAB RESOURCE
+// ================================
 
 export async function accessResource(
     resource
 ) {
 
-    const token =
-        localStorage.getItem("token");
+    try {
 
-    const response = await fetch(
-        `${API_URL}${resource}`,
-        {
-            method: "GET",
+        const token =
+            localStorage.getItem("token");
 
-            headers: {
-                "Authorization":
-                    `Bearer ${token}`
+        const response = await api.get(
+            resource,
+            {
+                headers: {
+                    Authorization:
+                        `Bearer ${token}`
+                }
             }
-        }
-    );
+        );
 
-    return {
-        status: response.status,
-        data: await response.json()
-    };
+        return response;
+
+    } catch (error) {
+
+        console.error(
+            "Access request error:",
+            error
+        );
+
+        return {
+            data: {
+                decision: "DENIED",
+
+                resource: resource,
+
+                message:
+                    error.response?.data?.message ||
+                    "Access request failed."
+            }
+        };
+    }
 }
+
+
+// ================================
+// GET ACCESS LOGS
+// ================================
 
 export async function getAccessLogs() {
 
-    const token =
-        localStorage.getItem("token");
+    try {
 
-    const response = await fetch(
-        `${API_URL}/lab/admin/access-logs`,
-        {
-            method: "GET",
+        const token =
+            localStorage.getItem("token");
 
-            headers: {
-                "Authorization":
-                    `Bearer ${token}`
+        const response = await api.get(
+            "/lab/admin/access-logs",
+            {
+                headers: {
+                    Authorization:
+                        `Bearer ${token}`
+                }
             }
-        }
-    );
+        );
 
-    return {
-        status: response.status,
-        data: await response.json()
-    };
+        return response;
+
+    } catch (error) {
+
+        console.error(
+            "Access logs error:",
+            error
+        );
+
+        return {
+            data: {
+                decision: "DENIED",
+
+                message:
+                    error.response?.data?.message ||
+                    "Unable to load access logs."
+            }
+        };
+    }
 }

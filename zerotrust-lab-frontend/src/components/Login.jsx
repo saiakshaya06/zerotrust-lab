@@ -19,6 +19,15 @@ function Login({
 
         e.preventDefault();
 
+        if (!username || !password) {
+            setMessage(
+                "Username and password are required."
+            );
+            return;
+        }
+
+        setMessage("Logging in...");
+
         const data =
             await loginUser(
                 username,
@@ -57,7 +66,10 @@ function Login({
             return;
         }
 
-        setMessage(data.message);
+        setMessage(
+            data.message ||
+            "Login failed."
+        );
     }
 
     return (
@@ -77,11 +89,10 @@ function Login({
                         type="text"
                         placeholder="Username"
                         value={username}
-                        onChange={
-                            e =>
-                                setUsername(
-                                    e.target.value
-                                )
+                        onChange={(e) =>
+                            setUsername(
+                                e.target.value
+                            )
                         }
                     />
 
@@ -89,11 +100,10 @@ function Login({
                         type="password"
                         placeholder="Password"
                         value={password}
-                        onChange={
-                            e =>
-                                setPassword(
-                                    e.target.value
-                                )
+                        onChange={(e) =>
+                            setPassword(
+                                e.target.value
+                            )
                         }
                     />
 
@@ -106,6 +116,7 @@ function Login({
                 <p>{message}</p>
 
                 <button
+                    type="button"
                     className="link-button"
                     onClick={goToRegister}
                 >

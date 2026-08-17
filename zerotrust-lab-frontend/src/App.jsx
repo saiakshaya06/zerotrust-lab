@@ -8,33 +8,23 @@ import Dashboard from "./components/Dashboard";
 import "./App.css";
 
 function App() {
+    const token = localStorage.getItem("token");
 
-    const token =
-        localStorage.setItem("token", token);
-
-    const [
-        page,
-        setPage
-    ] = useState("login");
+    const [page, setPage] = useState("login");
 
     if (token) {
-
         return <Dashboard />;
     }
 
     if (page === "register") {
-
         return (
             <Register
-                goToLogin={() =>
-                    setPage("login")
-                }
+                goToLogin={() => setPage("login")}
             />
         );
     }
 
     if (page === "otp") {
-
         return (
             <OtpVerification />
         );

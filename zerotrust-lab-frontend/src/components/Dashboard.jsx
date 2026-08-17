@@ -1,15 +1,15 @@
 import { useState } from "react";
+
 import {
     accessResource,
     getAccessLogs
 } from "../services/api";
 
+
 function Dashboard() {
 
     const username =
-        localStorage.getItem(
-            "username"
-        );
+        localStorage.getItem("username");
 
     const [result, setResult] =
         useState(null);
@@ -17,19 +17,29 @@ function Dashboard() {
     const [logs, setLogs] =
         useState([]);
 
-    async function checkResource(
-        resource
-    ) {
+
+    /* =====================================================
+       CHECK RESOURCE
+    ===================================================== */
+
+    async function checkResource(resource) {
+
+        setResult(null);
 
         const response =
-            await accessResource(
-                resource
-            );
+            await accessResource(resource);
 
         setResult(response.data);
     }
 
+
+    /* =====================================================
+       LOAD ACCESS LOGS
+    ===================================================== */
+
     async function loadLogs() {
+
+        setLogs([]);
 
         const response =
             await getAccessLogs();
@@ -40,6 +50,10 @@ function Dashboard() {
                 response.data.accessLogs
             );
 
+            setResult(
+                response.data
+            );
+
         } else {
 
             setResult(
@@ -47,6 +61,11 @@ function Dashboard() {
             );
         }
     }
+
+
+    /* =====================================================
+       LOGOUT
+    ===================================================== */
 
     function logout() {
 
@@ -58,15 +77,22 @@ function Dashboard() {
             "username"
         );
 
+        localStorage.removeItem(
+            "otpUsername"
+        );
+
         window.location.reload();
     }
 
+
     return (
+
         <div className="dashboard">
 
             <header>
 
                 <div>
+
                     <h1>
                         ZeroTrustLab
                     </h1>
@@ -75,9 +101,12 @@ function Dashboard() {
                         Zero Trust Laboratory
                         Access Control
                     </p>
+
                 </div>
 
+
                 <div>
+
                     <span>
                         User: {username}
                     </span>
@@ -87,15 +116,18 @@ function Dashboard() {
                     >
                         Logout
                     </button>
+
                 </div>
 
             </header>
+
 
             <main>
 
                 <h2>
                     Laboratory Resources
                 </h2>
+
 
                 <div className="resource-grid">
 
@@ -109,6 +141,7 @@ function Dashboard() {
                         Research
                     </button>
 
+
                     <button
                         onClick={() =>
                             checkResource(
@@ -118,6 +151,7 @@ function Dashboard() {
                     >
                         Experiments
                     </button>
+
 
                     <button
                         onClick={() =>
@@ -129,6 +163,7 @@ function Dashboard() {
                         Intern Resources
                     </button>
 
+
                     <button
                         onClick={() =>
                             checkResource(
@@ -139,6 +174,7 @@ function Dashboard() {
                         Equipment
                     </button>
 
+
                     <button
                         onClick={() =>
                             checkResource(
@@ -148,6 +184,7 @@ function Dashboard() {
                     >
                         Operations
                     </button>
+
 
                     <button
                         onClick={() =>
@@ -161,6 +198,9 @@ function Dashboard() {
 
                 </div>
 
+
+                {/* ACCESS DECISION */}
+
                 {result && (
 
                     <div className="decision">
@@ -169,27 +209,43 @@ function Dashboard() {
                             Access Decision
                         </h2>
 
+
                         <p>
-                            Decision:
-                            {" "}
+                            <strong>
+                                Decision:
+                            </strong>{" "}
                             {result.decision}
                         </p>
 
+
                         <p>
-                            Resource:
-                            {" "}
+                            <strong>
+                                Resource:
+                            </strong>{" "}
                             {result.resource}
                         </p>
 
+
                         <p>
-                            Message:
-                            {" "}
+                            <strong>
+                                User:
+                            </strong>{" "}
+                            {result.user}
+                        </p>
+
+
+                        <p>
+                            <strong>
+                                Message:
+                            </strong>{" "}
                             {result.message}
                         </p>
 
                     </div>
-
                 )}
+
+
+                {/* ACCESS LOGS */}
 
                 <div className="logs-section">
 
@@ -199,6 +255,7 @@ function Dashboard() {
                         View Access Logs
                     </button>
 
+
                     {logs.length > 0 && (
 
                         <table>
@@ -206,20 +263,40 @@ function Dashboard() {
                             <thead>
 
                                 <tr>
-                                    <th>User</th>
-                                    <th>Role</th>
-                                    <th>Resource</th>
-                                    <th>Decision</th>
-                                    <th>Reason</th>
-                                    <th>Time</th>
+
+                                    <th>
+                                        User
+                                    </th>
+
+                                    <th>
+                                        Role
+                                    </th>
+
+                                    <th>
+                                        Resource
+                                    </th>
+
+                                    <th>
+                                        Decision
+                                    </th>
+
+                                    <th>
+                                        Reason
+                                    </th>
+
+                                    <th>
+                                        Time
+                                    </th>
+
                                 </tr>
 
                             </thead>
 
+
                             <tbody>
 
                                 {logs.map(
-                                    log => (
+                                    (log) => (
 
                                         <tr
                                             key={
@@ -281,5 +358,6 @@ function Dashboard() {
         </div>
     );
 }
+
 
 export default Dashboard;
